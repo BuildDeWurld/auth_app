@@ -1,0 +1,25 @@
+# Your Task
+
+There is an API http://stacked.com.ng to register, login and view profile. You need to:
+
+- Build a registration page that consumes the /api/register route
+- Build a login page which makes a request to the /api/login route after successful registration.
+- On login/registration, the user should be redirected to a profile page which will call the /api/profile endpoint and display the user profile
+
+## Considerations
+
+You may want to consider:
+
+- How do we handle form validation?
+- What do we do on the /profile page if the token is invalid?
+- What if a customer is already logged in on the login page?
+- How do we logout?
+- How presentable are the screens?
+
+These considerations are time-permitting - you are not expected to action all of them.
+
+## To Submit
+
+Package the code in installable apk and share by replying via this email. 
+
+To avoid issues, ensure that the apk is installable on our devices for testing.
