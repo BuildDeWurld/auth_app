@@ -77,25 +77,32 @@ class _LoginFormState extends State<LoginForm> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     print("onpressed called");
+                    print(usernamecontroller.text.toString().runtimeType);
                     setState(() {
                       isLoading = true;
                     });
-                    try {
-                      final message = await model.login(
-                          username: usernamecontroller.text,
-                          password: passwordcontroller.text);
-                      setState(() {
-                        isLoading = false;
-                      });
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      //   return const ProfileScreen();
-                      // }));
-                    } catch (e) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                      print(e);
-                    }
+
+                    final message = await model.login(
+                      username: usernamecontroller.value.text.toString(),
+                      password: passwordcontroller.value.text.toString(),
+                      onError: () {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        print("error occured");
+                      },
+                      onSuccess: () {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return ProfileScreen(
+                            token: model.token,
+                          );
+                        }));
+                      },
+                    );
                   }
                 },
                 child: isLoading

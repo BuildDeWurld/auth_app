@@ -1,3 +1,4 @@
+import 'package:auth_app/Screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -70,7 +71,7 @@ class MainApp extends StatelessWidget {
           builder: (context, child) {
             return wrapWithTextScaleFactor(context, child!);
           },
-          home: const WelcomeScreen()),
+          home: const LoginScreen()),
     );
   }
 }

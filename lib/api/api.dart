@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,31 +8,42 @@ class ApiClass extends ChangeNotifier {
   //// Login
   ///
 
-  String message = "";
+  Map message = {};
+  Map token = {};
+  bool getProfileLoading = false;
 
   Future<String> login({
     required String username,
     required String password,
+    required Function() onSuccess,
+    required Function() onError,
   }) async {
-    print("login func called");
-    final response =
-        await http.post(Uri.parse("http://stacked.com.ng/api/login"),
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: jsonEncode({
-              "username": username,
-              "password": password,
-            }));
-    if (response.statusCode == 200) {
+    final uri = Uri.parse('https://stacked.com.ng/api/login');
+
+    final response = await http.post(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+      },
+      body: json.encode({
+        "username": username,
+        "password": password,
+      }),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print(response.body);
-      message = response.body;
+      // getProfile();
+      message = jsonDecode(response.body);
+      token = jsonDecode(response.body);
+      onSuccess();
       notifyListeners();
       return response.body;
     } else {
-      message = response.body;
+      message = jsonDecode(response.body);
+      onError();
       notifyListeners();
-      print(response.statusCode);
+
       return "Error${response.statusCode}";
     }
   }
@@ -45,6 +57,8 @@ class ApiClass extends ChangeNotifier {
     required String phone,
     required String address,
     required String image,
+    required Function() onSuccess,
+    required Function() onError,
   }) async {
     final response =
         await http.post(Uri.parse("https://stacked.com.ng/api/register"),
@@ -60,13 +74,17 @@ class ApiClass extends ChangeNotifier {
               "address": address,
               "image": image,
             }));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print(response.body);
-      message = response.body;
+      // getProfile(token: response.body['token']);
+      message = jsonDecode(response.body);
+      token = jsonDecode(response.body);
+      onSuccess();
       notifyListeners();
       return response.body;
     } else {
-      message = response.body;
+      message = jsonDecode(response.body);
+      onError();
       notifyListeners();
       print(response.statusCode);
       return "Error${response.body}";
@@ -75,18 +93,28 @@ class ApiClass extends ChangeNotifier {
 
   ///// getProfile
 
-  getProfile() async {
-    final response =
-        await http.get(Uri.parse("http://stacked.com.ng/api/profile"));
-    if (response.statusCode == 200) {
+  getProfile({required String token}) async {
+    print("get profile called");
+
+    getProfileLoading = true;
+    notifyListeners();
+    final response = await http
+        .get(Uri.parse("https://stacked.com.ng/api/profile"), headers: {
+      // "Content-Type": "application/json",
+      "accept": "application/json",
+      "Authorization": 'Bearer $token',
+    });
+    if (response.statusCode == 200 || response.statusCode == 201) {
       print(response.body);
-      message = response.body;
+      message = jsonDecode(response.body);
+      getProfileLoading = false;
       notifyListeners();
-      return response.body;
+      return jsonDecode(response.body);
     } else {
-      message = response.body;
+      message = jsonDecode(response.body);
+      getProfileLoading = false;
       notifyListeners();
-      print(response.statusCode);
+      print(" get p error ${response.statusCode}");
       return "Error${response.statusCode}";
     }
   }

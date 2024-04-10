@@ -152,28 +152,31 @@ class _SignUpFormState extends State<SignUpForm> {
                     setState(() {
                       isLoading = true;
                     });
-                    try {
-                      final message = await model.signUp(
-                          username: usernamecontroller.text,
-                          password: passwordcontroller.text,
-                          email: emailcontroller.text,
-                          phone: phonecontroller.text,
-                          address: addresscontroller.text,
-                          image: "image");
-                      // print(message);
-                      setState(() {
-                        isLoading = false;
-                      });
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      //   return const ProfileScreen();
-                      // }));
-                    } catch (e) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                      // print(e);
-                      print("message ${model.message}");
-                    }
+
+                    final message = await model.signUp(
+                        username: usernamecontroller.text,
+                        password: passwordcontroller.text,
+                        email: emailcontroller.text,
+                        phone: phonecontroller.text,
+                        address: addresscontroller.text,
+                        image: "image",
+                        onError: () {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          print("error occured");
+                        },
+                        onSuccess: () {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ProfileScreen(token: model.token);
+                          }));
+                        });
+
+                    // print(message);
                   }
                 },
                 child: isLoading
